@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Futuristic Notes</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #222;
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        background-color: #333;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        width: 400px;
+        margin: 50px auto;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    input[type="text"] {
+        width: calc(100% - 40px);
+        padding: 10px;
+        margin-bottom: 10px;
+        border: none;
+        border-radius: 5px;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        background-color: #444;
+        padding: 10px;
+        margin-bottom: 5px;
+        border-radius: 5px;
+    }
+
+    li span {
+        display: block;
+        word-wrap: break-word;
+    }
+
+    .delete-button {
+        background-color: #f44336;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .delete-button:hover {
+        background-color: #d32f2f;
+    }
+
+    .done {
+        text-decoration: line-through;
+        opacity: 0.5;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>NOTAS PRA FUDER SEU TDH</h1>
+    <input type="text" id="noteInput" placeholder="Add a new note...">
+    <ul id="noteList"></ul>
+</div>
+
+<script>
+    // Function to retrieve notes from local storage
+    function getNotes() {
+        return JSON.parse(localStorage.getItem('notes')) || [];
+    }
+
+    // Function to save notes to local storage
+    function saveNotes(notes) {
+        localStorage.setItem('notes', JSON.stringify(notes));
+    }
+
+    // Function to display notes
+    function displayNotes() {
+        const noteList = document.getElementById('noteList');
+        noteList.innerHTML = '';
+        const notes = getNotes();
+        notes.forEach((note, index) => {
+            const li = document.createElement('li');
+            const span = document.createElement('span');
+            span.textContent = note.text;
+            if (note.done) {
+                span.classList.add('done');
+            }
+            li.appendChild(span);
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('delete-button');
+            deleteButton.addEventListener('click', () => {
+                deleteNote(index);
+            });
+            li.appendChild(deleteButton);
+            noteList.appendChild(li);
+        });
+    }
+
+    // Function to add a new note
+    function addNote() {
+        const noteInput = document.getElementById('noteInput');
+        const text = noteInput.value.trim();
+        if (text !== '') {
+            const notes = getNotes();
+            notes.push({ text, done: false });
+            saveNotes(notes);
+            noteInput.value = '';
+            displayNotes();
+        }
+    }
+
+    // Function to delete a note
+    function deleteNote(index) {
+        const notes = getNotes();
+        notes.splice(index, 1);
+        saveNotes(notes);
+        displayNotes();
+    }
+
+    // Function to toggle note completion
+    function toggleDone(index) {
+        const notes = getNotes();
+        notes[index].done = !notes[index].done;
+        saveNotes(notes);
+        displayNotes();
+    }
+
+    // Event listener for adding a new note
+    document.getElementById('noteInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            addNote();
+        }
+    });
+
+    // Initial display of notes
+    displayNotes();
+</script>
+</body>
+</html>
